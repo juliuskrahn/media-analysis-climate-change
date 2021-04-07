@@ -2,28 +2,38 @@ import psycopg2
 from contextlib import contextmanager
 
 
-publishers = [
-    "ABCNews",
-    "ABSCBNNews",
-    "Bild",
-    "CNN",
-    "DailyMail",
-    "Emol",
-    "FoxNews",
-    "Huffpost",
-    "KenyansCoKe",
-    "NewsComAu",
-    "PeoplesDaily",
-    "RT",
-    "Spiegel",
-    "SZ",
-    "Tagesschau",
-    "TheGuardian",
-    "TheTimes",
-    "TheTimesOfIndia",
-    "USAToday",
-    "VG",
-]
+class Publisher:
+
+    def __init__(self, name, language):
+        self.name = name
+        self.language = language
+
+    def __str__(self):
+        return self.name
+
+
+publishers = [Publisher(name, language) for name, language in [
+    ("ABCNews", "en"),
+    ("ABSCBNNews", "en"),
+    ("Bild", "de"),
+    ("CNN", "en"),
+    ("DailyMail", "en"),
+    ("Emol", "sp"),
+    ("FoxNews", "en"),
+    ("Huffpost", "en"),
+    ("KenyansCoKe", "en"),
+    ("NewsComAu", "en"),
+    ("PeoplesDaily", "en"),
+    ("RT", "en"),
+    ("Spiegel", "de"),
+    ("SZ", "de"),
+    ("Tagesschau", "de"),
+    ("TheGuardian", "en"),
+    ("TheTimes", "en"),
+    ("TheTimesOfIndia", "en"),
+    ("USAToday", "en"),
+    ("VG", "nw"),
+]]
 
 
 @contextmanager
