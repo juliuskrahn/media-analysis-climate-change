@@ -4,35 +4,36 @@ from contextlib import contextmanager
 
 class Publisher:
 
-    def __init__(self, name, language):
+    def __init__(self, name, language, country):
         self.name = name
         self.language = language
+        self.country = country
 
     def __str__(self):
         return self.name
 
 
-publishers = [Publisher(name, language) for name, language in [
-    ("ABCNews", "en"),
-    ("ABSCBNNews", "en"),
-    ("Bild", "de"),
-    ("CNN", "en"),
-    ("DailyMail", "en"),
-    # ("Emol", "sp"),  # cancelled
-    ("FoxNews", "en"),
-    ("Huffpost", "en"),
-    ("KenyansCoKe", "en"),
-    ("NewsComAu", "en"),
-    ("PeoplesDaily", "en"),
-    ("RT", "en"),
-    ("Spiegel", "de"),
-    ("SZ", "de"),
-    ("Tagesschau", "de"),
-    ("TheGuardian", "en"),
-    ("TheTimes", "en"),
-    ("TheTimesOfIndia", "en"),
-    ("USAToday", "en"),
-    # ("VG", "nw"),  # cancelled
+publishers = [Publisher(name, language, country) for name, language, country in [
+    ("ABCNews", "en", "Australien"),
+    ("ABSCBNNews", "en", "Philippinen"),
+    ("Bild", "de", "Deutschland"),
+    ("CNN", "en", "USA"),
+    ("DailyMail", "en", "UK"),
+    # ("Emol", "sp", "cl"),  # cancelled
+    ("FoxNews", "en", "USA"),
+    ("Huffpost", "en", "USA"),
+    ("KenyansCoKe", "en", "Kenya"),
+    ("NewsComAu", "en", "Australien"),
+    ("PeoplesDaily", "en", "China"),
+    ("RT", "en", "Russland"),
+    ("Spiegel", "de", "Deutschland"),
+    ("SZ", "de", "Deutschland"),
+    ("Tagesschau", "de", "Deutschland"),
+    ("TheGuardian", "en", "UK"),
+    ("TheTimes", "en", "UK"),
+    ("TheTimesOfIndia", "en", "Indien"),
+    ("USAToday", "en", "USA"),
+    # ("VG", "no", "no"),  # cancelled
 ]]
 
 
