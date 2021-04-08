@@ -18,7 +18,7 @@ publishers = [Publisher(name, language) for name, language in [
     ("Bild", "de"),
     ("CNN", "en"),
     ("DailyMail", "en"),
-    ("Emol", "sp"),
+    # ("Emol", "sp"),  # cancelled
     ("FoxNews", "en"),
     ("Huffpost", "en"),
     ("KenyansCoKe", "en"),
@@ -32,7 +32,7 @@ publishers = [Publisher(name, language) for name, language in [
     ("TheTimes", "en"),
     ("TheTimesOfIndia", "en"),
     ("USAToday", "en"),
-    ("VG", "nw"),
+    # ("VG", "nw"),  # cancelled
 ]]
 
 
