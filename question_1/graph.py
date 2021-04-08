@@ -11,6 +11,7 @@ class Graph:
         for publisher in utils.publishers:
             if publisher.country not in countries:
                 countries.append(publisher.country)
+        countries.sort()
         _ = plt.subplots(len(countries), figsize=(10, len(countries) * 4.2))
         self.fig: plt.Figure = _[0]
         self.grouped_axs: typing.Dict[str, plt.Axes] = {}
