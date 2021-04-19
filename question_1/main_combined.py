@@ -17,20 +17,20 @@ def main():
                     (SELECT CAST(articles_about_climate_change_absolute.n AS real) / articles_total.n) * 100
                     AS articles_about_climate_change_percent
                 FROM (
-                    SELECT to_timestamp(TO_CHAR(published, 'YYYYMM'), 'YYYYMM') AS published_date, COUNT(*) as n
+                    SELECT TO_CHAR(published, 'YYYY') AS published_date, COUNT(*) as n
                     FROM article
                     WHERE publisher = '{publisher}' AND (SELECT EXTRACT(YEAR FROM published)) >= 2015
                     AND {is_about_climate_change_sql_statement[publisher.language]}
-                    GROUP BY TO_CHAR(published, 'YYYYMM')
+                    GROUP BY TO_CHAR(published, 'YYYY')
                 ) AS articles_about_climate_change_absolute
                 JOIN (
-                    SELECT to_timestamp(TO_CHAR(published, 'YYYYMM'), 'YYYYMM') AS published_date, COUNT(*) AS n
+                    SELECT TO_CHAR(published, 'YYYY') AS published_date, COUNT(*) AS n
                     FROM article
                     WHERE publisher = '{publisher}' AND (SELECT EXTRACT(YEAR FROM published)) >= 2015
-                    GROUP BY TO_CHAR(published, 'YYYYMM')
+                    GROUP BY TO_CHAR(published, 'YYYY')
                 ) AS articles_total
                 ON articles_total.published_date = articles_about_climate_change_absolute.published_date
-                ORDER BY TO_CHAR(articles_total.published_date, 'YYYYMM');
+                ORDER BY articles_total.published_date;
                 """
                 , conn)
             )
