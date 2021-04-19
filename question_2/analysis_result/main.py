@@ -8,7 +8,7 @@ def main():
 
     df = pd.read_excel("../analysed_data_combined.ods", engine="odf")
     df["published"] = pd.to_datetime(df["published"], format="%Y-%M-%d")
-    df_result = df.groupby(pd.Grouper(key="published", freq='Y')).agg(np.mean)
+    df_result = df.groupby(pd.Grouper(key="published", freq='YS')).agg(np.mean)
     graph.plot_repr("verleugnet", df_result.index, df_result["content:verleugnet"])
     graph.plot_repr("zugespitzt", df_result.index, df_result["content:zugespitzt"])
     graph.plot_repr("runtergespielt", df_result.index, df_result["content:runtergespielt"])
