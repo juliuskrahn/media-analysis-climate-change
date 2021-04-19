@@ -19,14 +19,14 @@ def main():
                 FROM (
                     SELECT TO_CHAR(published, 'YYYY') AS published_date, COUNT(*) as n
                     FROM article
-                    WHERE publisher = '{publisher}' AND (SELECT EXTRACT(YEAR FROM published)) >= 2015
+                    WHERE publisher = '{publisher}' AND ((SELECT EXTRACT(YEAR FROM published)) BETWEEN 2015 AND 2020)
                     AND {is_about_climate_change_sql_statement[publisher.language]}
                     GROUP BY TO_CHAR(published, 'YYYY')
                 ) AS articles_about_climate_change_absolute
                 JOIN (
                     SELECT TO_CHAR(published, 'YYYY') AS published_date, COUNT(*) AS n
                     FROM article
-                    WHERE publisher = '{publisher}' AND (SELECT EXTRACT(YEAR FROM published)) >= 2015
+                    WHERE publisher = '{publisher}' AND ((SELECT EXTRACT(YEAR FROM published)) BETWEEN 2015 AND 2020)
                     GROUP BY TO_CHAR(published, 'YYYY')
                 ) AS articles_total
                 ON articles_total.published_date = articles_about_climate_change_absolute.published_date
