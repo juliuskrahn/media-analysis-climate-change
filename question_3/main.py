@@ -1,3 +1,4 @@
+import typing
 import numpy as np
 import pandas as pd
 import utils
@@ -5,12 +6,12 @@ from question_1.is_about_climate_change_sql_statement import is_about_climate_ch
 from graph import Graph
 
 
-def get_is_about_climate_change_df():
-    dfs = []
+def get_publisher_specific_is_about_climate_change_dfs() -> typing.Dict[typing.Any, pd.DataFrame]:
+    dfs = {}
 
     for publisher in utils.publishers:
         with utils.db_conn() as conn:
-            dfs.append(pd.read_sql_query(
+            dfs[publisher] = pd.read_sql_query(
                 f"""
                 SELECT articles_total.published_date AS published,
                     (SELECT CAST(articles_about_climate_change_absolute.n AS real) / articles_total.n) * 100
@@ -19,7 +20,7 @@ def get_is_about_climate_change_df():
                     SELECT TO_CHAR(published, 'YYYY') AS published_date, COUNT(*) as n
                     FROM article
                     WHERE publisher = '{publisher}' AND ((SELECT EXTRACT(YEAR FROM published)) BETWEEN 2015 AND 2020)
-                    AND {is_about_climate_change_sql_statement[publisher.language]}
+                        AND {is_about_climate_change_sql_statement[publisher.language]}
                     GROUP BY TO_CHAR(published, 'YYYY')
                 ) AS articles_about_climate_change_absolute
                 JOIN (
@@ -31,30 +32,35 @@ def get_is_about_climate_change_df():
                 ON articles_total.published_date = articles_about_climate_change_absolute.published_date
                 ORDER BY articles_total.published_date;
                 """
-                , conn)
-            )
-
-    df_combined = pd.concat(dfs)
-    df_combined = df_combined.groupby(df_combined["published"]).mean()
-    df_combined.index = pd.to_datetime(df_combined.index, format="%Y")
-    return df_combined
+                , conn, index_col="published")
+            dfs[publisher].index = pd.to_datetime(dfs[publisher].index, format="%Y")
+    return dfs
 
 
 def main():
-    is_about_climate_change_df = get_is_about_climate_change_df()
+    publisher_specific_is_about_climate_change_dfs = get_publisher_specific_is_about_climate_change_dfs()
 
-    article_content_df = pd.read_excel("../question_2/analysed_data_combined.ods", engine="odf")
-    article_content_df["published"] = pd.to_datetime(article_content_df["published"], format="%Y-%M-%d")
-    article_content_df = article_content_df.groupby(pd.Grouper(key="published", freq='YS')).agg(np.mean)
+    content_analysis_df = pd.read_excel("../question_2/analysed_data_combined.ods", engine="odf")
+    content_analysis_df["published"] = pd.to_datetime(content_analysis_df["published"], format="%Y-%M-%d")
 
-    df_combined = pd.concat((is_about_climate_change_df, article_content_df), axis=1)
-    df_combined = df_combined.sort_values(by="articles_about_climate_change_percent")
+    publisher_specific_content_and_is_about_cc_comparison_dfs = []
+    for publisher, is_about_climate_change_df in publisher_specific_is_about_climate_change_dfs.items():
+        content_df = content_analysis_df[content_analysis_df["publisher"] == publisher.name]
+        content_df = content_df.groupby(pd.Grouper(key="published", freq='YS')).agg(np.mean)
+        publisher_specific_content_and_is_about_cc_comparison_dfs.append(
+            pd.concat((is_about_climate_change_df, content_df), axis=1)
+        )
+
+    result_df = pd.concat(publisher_specific_content_and_is_about_cc_comparison_dfs).sort_values(
+        by="articles_about_climate_change_percent"
+    )
 
     graph = Graph()
 
-    graph.plot("verleugnet", df_combined["articles_about_climate_change_percent"], df_combined["content:verleugnet"])
-    graph.plot("zugespitzt", df_combined["articles_about_climate_change_percent"], df_combined["content:zugespitzt"])
-    graph.plot("runtergespielt", df_combined["articles_about_climate_change_percent"], df_combined["content:runtergespielt"])
+    graph.plot("verleugnet", result_df["articles_about_climate_change_percent"], result_df["content:verleugnet"])
+    graph.plot("zugespitzt", result_df["articles_about_climate_change_percent"], result_df["content:zugespitzt"])
+    graph.plot("runtergespielt", result_df["articles_about_climate_change_percent"],
+               result_df["content:runtergespielt"])
 
     graph.save()
 
